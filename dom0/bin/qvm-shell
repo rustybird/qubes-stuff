@@ -1,0 +1,15 @@
+#!/bin/sh -e
+
+if [ $# = 0 ]; then
+    echo "Usage: qvm-shell [<qvm-run argument>...] <vm>" >&2
+    exit 1
+fi
+
+if [ -t 0 ]; then
+    stty_bak=$(stty -g)
+    trap "stty $stty_bak" EXIT
+    stty -echo -icanon  # disable echoing and line buffering
+fi
+
+qvm-run --pass-io "$@" \
+        "LC_CTYPE=C exec script --quiet --return /dev/null"  # fake dumb TTY

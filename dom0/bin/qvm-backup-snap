@@ -1,0 +1,16 @@
+#!/usr/bin/sudo sh
+#
+# qvm-backup wrapper that can handle running VMs stored on btrfs dom0.
+# Usage: qvm-backup-snap <qvm-backup argument>...
+
+set -e
+tmp=$(mktemp -ud /var/tmp/qubes-backup-snap.XXXXXX)
+
+btrfs subvolume snapshot / "$tmp"
+trap 'btrfs subvolume delete "$tmp"' EXIT
+
+sed -e 's/^\( *\)if vm.is_running():$/\1if False:/' \
+    -i "$tmp"/usr/lib64/python2.7/site-packages/qubes/backup.py
+
+for d in /dev /dev/shm /proc /run; do mount --bind $d "$tmp"/$d; done
+chroot "$tmp" su -s /usr/bin/qvm-backup - "$SUDO_USER" -- "$@"
