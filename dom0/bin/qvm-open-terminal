@@ -1,0 +1,10 @@
+#!/bin/bash
+set -e -o pipefail
+
+if [ $# = 0 ]; then
+    id=$(xdotool getwindowfocus)
+    vm=$(xprop -id "$id" _QUBES_VMNAME | grep ' = ' | cut -d \" -f 2)
+    set -- "$vm"
+fi
+
+for arg; do qvm-run -a -- "$arg" 'gnome-terminal || xterm'; done

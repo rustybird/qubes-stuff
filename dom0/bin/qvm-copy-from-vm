@@ -1,0 +1,26 @@
+#!/bin/sh -e
+
+if [ $# -lt 2 -o -z "$1" ]; then
+    echo "Usage: $0 <vm> <file>..."
+    exit 1
+fi
+
+vm=$1
+shift
+
+dir=$HOME/QubesIncoming/$vm
+mkdir -p -- "$dir"
+cd       -- "$dir"
+
+status=0
+for file; do
+    tmp=`mktemp -p .`
+
+    printf '%s\0' "$file" | qvm-run --auto --pass-io --user=root -- "$vm" \
+                                    'cd ~user; xargs -0 cat --' >"$tmp" &&
+    ln -T -- "$tmp" "${file##*/}" ||
+    status=1
+
+    rm -f -- "$tmp"
+done
+exit $status
