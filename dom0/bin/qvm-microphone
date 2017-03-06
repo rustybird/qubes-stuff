@@ -1,0 +1,10 @@
+#!/bin/sh -e
+
+if [ $# != 2 ]; then
+    echo "Usage: ${0##*/} <vm> true|false"
+    exit 1
+fi
+
+dbus-send --type=method_call --dest=org.QubesOS.Audio."$1" /org/qubesos/audio \
+          org.freedesktop.DBus.Properties.Set string:org.QubesOS.Audio \
+          string:RecAllowed variant:boolean:"$2"
