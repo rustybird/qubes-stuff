@@ -2,9 +2,16 @@
 set -e -o pipefail
 
 if [[ $# == 0 ]]; then
-    id=$(xdotool getwindowfocus)
-    vm=$(xprop -id "$id" _QUBES_VMNAME | grep ' = ' | cut -d \" -f 2)
-    set -- "$vm"
+    id=$(xdotool getwindowfocus) &&
+    vm=$(xprop -id "$id" _QUBES_VMNAME | grep ' = ' | cut -d \" -f 2) &&
+    set -- "$vm" ||
+    set -- dom0
 fi
 
-for arg; do qvm-run -a -- "$arg" 'gnome-terminal || xterm'; done
+for arg; do
+    if [[ $arg == dom0 ]]; then
+        xfce4-terminal || xterm
+    else
+        qvm-run -a -- "$arg" 'gnome-terminal || xterm'
+    fi
+done
