@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e -o pipefail
 
-if [ $# = 0 ]; then
+if [[ $# == 0 ]]; then
     id=$(xdotool getwindowfocus)
     vm=$(xprop -id "$id" _QUBES_VMNAME | grep ' = ' | cut -d \" -f 2)
     set -- "$vm"
