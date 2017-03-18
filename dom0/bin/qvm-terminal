@@ -12,6 +12,6 @@ for arg; do
     if [[ $arg == dom0 ]]; then
         xfce4-terminal || xterm
     else
-        qvm-run -a -- "$arg" 'gnome-terminal || xterm'
+        qvm-run --auto -- "$arg" 'gnome-terminal || xterm'
     fi
 done
