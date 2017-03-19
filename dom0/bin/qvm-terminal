@@ -6,12 +6,16 @@ if [[ $# == 0 ]]; then
     vm=$(xprop -id "$id" _QUBES_VMNAME | grep ' = ' | cut -d \" -f 2) &&
     set -- "$vm" ||
     set -- dom0
+
+    vm_run() { /usr/lib/qubes/qrexec-client -e -d "$1" "user:$2"; }
+else
+    vm_run() { qvm-run --auto -- "$1" "$2"; }  # a little slower, but has --auto
 fi
 
 for arg; do
     if [[ $arg == dom0 ]]; then
         xfce4-terminal || xterm
     else
-        qvm-run --auto -- "$arg" 'gnome-terminal || xterm'
+        vm_run "$arg" 'gnome-terminal || xterm'
     fi
 done
