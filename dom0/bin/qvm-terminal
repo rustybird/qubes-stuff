@@ -1,10 +1,11 @@
-#!/bin/bash
-set -e -o pipefail
+#!/bin/bash -e
 
 if [[ $# == 0 ]]; then
     id=$(xdotool getwindowfocus) &&
-    vm=$(xprop -id "$id" _QUBES_VMNAME | grep ' = ' | cut -d \" -f 2) &&
-    set -- "$vm" ||
+    prop=$(xprop -id "$id" -notype _QUBES_VMNAME) &&
+    prop_regex='^_QUBES_VMNAME = "(.+)"$' &&
+    [[ "$prop" =~ $prop_regex ]] &&
+    set -- "${BASH_REMATCH[1]}" ||
     set -- dom0
 
     vm_run() { /usr/lib/qubes/qrexec-client -e -d "$1" "user:$2"; }
