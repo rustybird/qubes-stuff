@@ -7,7 +7,8 @@ vm_terminal() {
 }
 
 dom0_terminal() {
-    xfce4-terminal || xterm
+    # also non-blocking
+    xfce4-terminal || { xterm & }
 }
 
 if [[ $# == 0 ]]; then
