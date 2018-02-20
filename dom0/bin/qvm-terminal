@@ -2,7 +2,8 @@
 
 vm_terminal() {
     # fast and non-blocking
-    /usr/lib/qubes/qrexec-client -e -d "$1" 'DEFAULT:gnome-terminal || xterm'
+    /usr/lib/qubes/qrexec-client -e -d "$1" \
+    'DEFAULT:{ gnome-terminal || xterm; } </dev/null >/dev/null 2>&1'
 }
 
 dom0_terminal() {
