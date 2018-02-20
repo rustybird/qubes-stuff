@@ -1,23 +1,27 @@
 #!/bin/bash -e
 
+vm_terminal() {
+    # fast and non-blocking
+    /usr/lib/qubes/qrexec-client -e -d "$1" 'DEFAULT:gnome-terminal || xterm'
+}
+
+dom0_terminal() {
+    xfce4-terminal || xterm
+}
+
 if [[ $# == 0 ]]; then
     prop_regex='^_QUBES_VMNAME = "(.+)"$'
 
-    id=$(xdotool getwindowfocus) &&
-    prop=$(xprop -id "$id" -notype _QUBES_VMNAME) &&
-    [[ "$prop" =~ $prop_regex ]] &&
-    set -- "${BASH_REMATCH[1]}" ||
-    set -- dom0
-
-    vm_run() { /usr/lib/qubes/qrexec-client -e -d "$1" "user:$2"; }
-else
-    vm_run() { qvm-run --auto -- "$1" "$2"; }  # a little slower, but has --auto
-fi
-
-for arg; do
-    if [[ $arg == dom0 ]]; then
-        xfce4-terminal || xterm
+    if id=$(xdotool getwindowfocus) &&
+       prop=$(xprop -id "$id" -notype _QUBES_VMNAME) &&
+       [[ "$prop" =~ $prop_regex ]]; then
+        vm_terminal "${BASH_REMATCH[1]}"
     else
-        vm_run "$arg" 'gnome-terminal || xterm'
+        dom0_terminal
     fi
-done
+else
+    for arg; do
+        qvm-run --quiet --no-gui --service "$arg" qubes.WaitForSession
+        vm_terminal "$arg"
+    done
+fi
