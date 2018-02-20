@@ -8,7 +8,7 @@ fi
 if [ -t 0 ]; then
     stty_bak=$(stty -g)
     trap "stty $stty_bak" EXIT
-    stty -echo -icanon  # disable echoing and line buffering
+    stty -echo -icanon intr ""  # disable echoing, line buffering, and Ctrl+c
 fi
 
 qvm-run --pass-io "$@" \
