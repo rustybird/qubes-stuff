@@ -20,8 +20,8 @@ if [[ $# == 0 ]]; then
         dom0_terminal
     fi
 else
-    for arg; do
-        qvm-run --quiet --no-gui --service "$arg" qubes.WaitForSession
-        vm_terminal "$arg"
+    for vm; do
+        qvm-run --quiet --no-gui --service "$vm" qubes.WaitForSession
+        vm_terminal "$vm"
     done
 fi
