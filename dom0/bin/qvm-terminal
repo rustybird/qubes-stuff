@@ -23,7 +23,7 @@ if [[ $# == 0 ]]; then
     fi
 else
     for vm; do
-        qvm-run --quiet --no-gui --service "$vm" qubes.WaitForSession
+        qvm-run --quiet "$vm" :
         vm_terminal "$vm"
     done
 fi
