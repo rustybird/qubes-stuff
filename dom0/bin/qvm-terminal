@@ -16,6 +16,6 @@ fi
 
 # arguments passed - each names a VM in which to open a terminal
 for vm; do
-    qvm-run --quiet "$vm" :
+    qvm-run --quiet -- "$vm" :
     "${vm_terminal[@]}" "$vm"
 done
