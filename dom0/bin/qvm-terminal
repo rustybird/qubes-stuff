@@ -1,29 +1,21 @@
 #!/bin/bash -e
 
-vm_terminal() {
-    # fast and non-blocking
-    /usr/lib/qubes/qrexec-client -e -d "$1" \
-    'DEFAULT:qubes-run-terminal </dev/null >/dev/null 2>&1'
-}
+# fast and nonblocking
+vm_terminal=( /usr/lib/qubes/qrexec-client
+              'DEFAULT:qubes-run-terminal </dev/null >/dev/null 2>&1'
+              -e -d )
 
-dom0_terminal() {
-    # also non-blocking
-    xfce4-terminal || { xterm & }
-}
-
+# no arguments - window focus determines the VM in which to open a terminal
 if [[ $# == 0 ]]; then
+    id=$(xdotool getwindowfocus)
+    prop=$(xprop -id "$id" -notype _QUBES_VMNAME)
     prop_regex='^_QUBES_VMNAME = "(.+)"$'
-
-    if id=$(xdotool getwindowfocus) &&
-       prop=$(xprop -id "$id" -notype _QUBES_VMNAME) &&
-       [[ "$prop" =~ $prop_regex ]]; then
-        vm_terminal "${BASH_REMATCH[1]}"
-    else
-        dom0_terminal
-    fi
-else
-    for vm; do
-        qvm-run --quiet "$vm" :
-        vm_terminal "$vm"
-    done
+    [[ "$prop" =~ $prop_regex ]]
+    exec "${vm_terminal[@]}" "${BASH_REMATCH[1]}"
 fi
+
+# arguments passed - each names a VM in which to open a terminal
+for vm; do
+    qvm-run --quiet "$vm" :
+    "${vm_terminal[@]}" "$vm"
+done
