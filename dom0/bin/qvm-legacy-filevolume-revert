@@ -1,0 +1,50 @@
+#!/usr/bin/sudo bash
+# shellcheck shell=bash
+# vim: filetype=bash
+
+set -e -u -o pipefail -o errtrace
+trap 'exit $?' ERR
+
+# parse arguments
+[[ $# == 2 ]] || { echo "Usage: ${0##*/} vm volume" >&2; exit 1; }
+set -x
+vm=$1
+volume=$2
+
+# sanity checks
+if qvm-check --running -- "$vm"; then exit 1; fi
+qvm-volume info -- "$vm:$volume" pool |
+xargs -d '\n' qvm-pool --info |
+grep -xE 'driver +file'
+
+# find image files
+origin_img=$(
+    qubesd-query --fail --empty -- dom0 admin.vm.volume.Info "$vm" "$volume" |
+    tail -c +3 |
+    grep ^path= |
+    cut -d = -f 2-
+)
+cow_img=${origin_img%.*}-cow.img.old
+
+# setup
+cow=$(losetup -f --show -- "$cow_img")
+origin=$(losetup -f --show -- "$origin_img")
+size_cow=$(blockdev --getsz "$cow")
+size_origin=$(blockdev --getsz "$origin")
+[[ "$size_cow" == "$size_origin" ]]
+merge=snapshot-merge:$vm:$volume
+dmsetup create "$merge" --table "0 $size_cow snapshot-merge $origin $cow P 256"
+
+# wait for completion
+until dmsetup status "$merge" |
+      (IFS=' /' read -r _ _ _ alloc _ meta; [[ "$alloc" == "$meta" ]]); do
+    sleep 1
+done
+
+# cleanup
+dmsetup remove "$merge"
+losetup -d "$cow"
+losetup -d "$origin"
+
+{ set +x; } 2>/dev/null
+echo Done. >&2
