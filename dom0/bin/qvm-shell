@@ -12,4 +12,4 @@ if [ -t 0 ]; then
 fi
 
 qvm-run --pass-io "$@" \
-        "LC_CTYPE=C exec script --quiet --return /dev/null"  # fake dumb TTY
+        "LC_CTYPE=C script --quiet --return /dev/null"  # fake dumb TTY
