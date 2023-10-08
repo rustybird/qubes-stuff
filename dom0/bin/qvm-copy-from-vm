@@ -16,7 +16,7 @@ status=0
 for file; do
     tmp=`mktemp -p .`
 
-    user=$(qvm-prefs --get "$vm" default_user) &&
+    user=$(qvm-prefs -- "$vm" default_user) &&
     printf %s "$file" | qvm-run --pass-io --user=root -- "$vm" \
                                 "cd ~$user; xargs -0 cat --" >"$tmp" &&
     ln -T -- "$tmp" "${file##*/}" ||
