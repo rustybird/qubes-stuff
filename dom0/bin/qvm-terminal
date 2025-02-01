@@ -11,11 +11,11 @@ if [[ $# == 0 ]]; then
     prop=$(xprop -id "$id" -notype _QUBES_VMNAME)
     prop_regex='^_QUBES_VMNAME = "(.+)"$'
     [[ "$prop" =~ $prop_regex ]]
-    exec "${vm_terminal[@]}" "${BASH_REMATCH[1]}" 2>/dev/null
+    exec "${vm_terminal[@]}" "${BASH_REMATCH[1]}" </dev/null &>/dev/null
 fi
 
 # arguments passed - each names a VM in which to open a terminal
 for vm; do
     qvm-run --quiet -- "$vm" :
-    "${vm_terminal[@]}" "$vm" 2>/dev/null
+    "${vm_terminal[@]}" "$vm" </dev/null &>/dev/null
 done
