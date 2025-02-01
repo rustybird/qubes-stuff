@@ -6,7 +6,7 @@ vm_terminal=(
     'DEFAULT:exec /usr/bin/qubes-run-terminal </dev/null >/dev/null 2>&1' -e -d
 )
 
-# no arguments - window focus determines the VM in which to open a terminal
+# no arguments - active window determines the VM in which to open a terminal
 if [[ $# == 0 ]]; then
     win_output=$(LC_ALL=C xprop -root -notype _NET_ACTIVE_WINDOW)
     win_regex='^_NET_ACTIVE_WINDOW: window id # (0x[0-9a-f]+)'
