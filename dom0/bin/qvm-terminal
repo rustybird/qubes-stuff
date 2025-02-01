@@ -1,9 +1,10 @@
 #!/bin/bash -e
 
 # fast and nonblocking
-vm_terminal=( /usr/lib/qubes/qrexec-client
-              'DEFAULT:/usr/bin/qubes-run-terminal </dev/null >/dev/null 2>&1'
-              -e -d )
+vm_terminal=(
+    /usr/lib/qubes/qrexec-client
+    'DEFAULT:exec /usr/bin/qubes-run-terminal </dev/null >/dev/null 2>&1' -e -d
+)
 
 # no arguments - window focus determines the VM in which to open a terminal
 if [[ $# == 0 ]]; then
