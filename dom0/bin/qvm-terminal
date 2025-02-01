@@ -13,12 +13,12 @@ if [[ $# == 0 ]]; then
     [[ "$window_output" =~ $window_regex  ]]
     window=${BASH_REMATCH[1]}
 
-    vmname_output=$(LC_ALL=C xprop -id "$window" -notype _QUBES_VMNAME)
-    vmname_regex='^_QUBES_VMNAME = "([^"]+)"$'
-    [[ "$vmname_output" =~ $vmname_regex ]]
-    vmname=${BASH_REMATCH[1]}
+    vm_output=$(LC_ALL=C xprop -id "$window" -notype _QUBES_VMNAME)
+    vm_regex='^_QUBES_VMNAME = "([^"]+)"$'
+    [[ "$vm_output" =~ $vm_regex ]]
+    vm=${BASH_REMATCH[1]}
 
-    exec "${vm_terminal[@]}" "$vmname" </dev/null &>/dev/null
+    exec "${vm_terminal[@]}" "$vm" </dev/null &>/dev/null
 fi
 
 # arguments passed - each names a VM in which to open a terminal
