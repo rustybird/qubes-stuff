@@ -8,12 +8,12 @@ vm_terminal=(
 
 # no arguments - window focus determines the VM in which to open a terminal
 if [[ $# == 0 ]]; then
-    window_output=$(LC_ALL=C xprop -root -notype _NET_ACTIVE_WINDOW)
-    window_regex='^_NET_ACTIVE_WINDOW: window id # (0x[0-9a-f]+)'
-    [[ "$window_output" =~ $window_regex  ]]
-    window=${BASH_REMATCH[1]}
+    win_output=$(LC_ALL=C xprop -root -notype _NET_ACTIVE_WINDOW)
+    win_regex='^_NET_ACTIVE_WINDOW: window id # (0x[0-9a-f]+)'
+    [[ "$win_output" =~ $win_regex ]]
+    win=${BASH_REMATCH[1]}
 
-    vm_output=$(LC_ALL=C xprop -id "$window" -notype _QUBES_VMNAME)
+    vm_output=$(LC_ALL=C xprop -id "$win" -notype _QUBES_VMNAME)
     vm_regex='^_QUBES_VMNAME = "([^"]+)"$'
     [[ "$vm_output" =~ $vm_regex ]]
     vm=${BASH_REMATCH[1]}
