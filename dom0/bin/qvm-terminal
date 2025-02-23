@@ -2,7 +2,7 @@
 
 # fast and nonblocking
 vm_terminal=(
-    /usr/lib/qubes/qrexec-client
+    /usr/bin/qrexec-client
     'DEFAULT:exec /usr/bin/qubes-run-terminal </dev/null >/dev/null 2>&1' -e -d
 )
 
