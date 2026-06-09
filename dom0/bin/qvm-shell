@@ -11,5 +11,5 @@ if [ -t 0 ]; then
     stty -echo -icanon intr ""  # disable echoing, line buffering, and Ctrl+c
 fi
 
-qvm-run --pass-io "$@" \
-        "LC_CTYPE=C script --quiet --return /dev/null"  # fake dumb TTY
+qvm-run --pass-io "$@" -- \
+        env LC_CTYPE=C script --quiet --return /dev/null  # fake dumb TTY
